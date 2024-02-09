@@ -4,7 +4,7 @@ from utilities.read_process_data_utility import (
     summary_statistics, 
     resample_and_aggregate,get_session_directory, ensure_session_id)
 
-tab1, tab2, tab3, tab4, tab5  = st.tabs(["Instructions", "Upload Data", "Data Info", "Pair Data", "Aggregate Data"])
+tab1, tab2, tab3, tab4, tab5  = st.tabs(["Instructions", "Upload Data", "View Data", "Pair Data", "Aggregate Data"])
    
 with tab1:
     st.header("Instructions")
@@ -19,7 +19,7 @@ with tab2:
         st.write("Coming soon")
 
 with tab3:
-    st.header("Data Info")
+    st.header("View Data")
     summary_statistics()
 
 with tab4:
@@ -67,7 +67,7 @@ with tab5:
 
                  # Save file in session directory
                 session_dir = get_session_directory()  # Use session-specific directory
-                cleaned_data.to_csv(session_dir / 'resampled_data.csv', index=False)
+                cleaned_data.to_csv(session_dir / 'resampled_data.csv', index=True)
             
                 
 

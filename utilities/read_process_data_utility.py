@@ -5,8 +5,6 @@ from pathlib import Path
 import uuid
 from io import StringIO
 
-DateTimeColumnName = None
-
 def ensure_session_id():
     if 'session_id' not in st.session_state:
         st.session_state.session_id = str(uuid.uuid4())
@@ -32,29 +30,16 @@ def files_upload_for_already_paired():
     with st.form("Paird Data"):
         uploaded_already_paired_data = file_upload_form_for_already_paired()
 
-        col1, col2 = st.columns([2, 2])
-
-        with col1:
-            global DateTimeColumnName
-            DateTimeColumnName = st.text_input("Datetime Column Name", key="dt_col_name")
-        
-        with col2:
-            DateFormat = st.text_input("Date Format", key="date_format")
-
         submit_button = st.form_submit_button('Submit')
 
         if submit_button:
             if uploaded_already_paired_data is None:
                 st.warning("Please upload paired data to proceed.")
-            elif not DateTimeColumnName:   #or not DateFormat   and 'Date Format'
-                st.warning("Please fill in both 'Datetime Column Name'.")
             else:
                 placeholder.success("Uploaded successfully to the cloud")
                 already_paired_df = pd.read_csv(uploaded_already_paired_data, 
-                                                parse_dates=[DateTimeColumnName])
-                st.write(already_paired_df)
-                print(DateTimeColumnName)
-                # print(DateFormat)
+                                                parse_dates=["DataDate"])
+                st.write(already_paired_df.head())
                 
                 # Save file in session directory
                 already_paired_df.to_csv(session_dir / 'already_paired_data.csv', index=False)
@@ -85,8 +70,8 @@ def read_files_from_directory(filename):
         return None
 
     # If the file exists, read it into a DataFrame
-    data = pd.read_csv(target_file, parse_dates=["DataDate"])
-    print(data.info())
+    data = pd.read_csv(target_file)
+    # print(data.info())
     return data
 
 
@@ -99,6 +84,10 @@ def summary_statistics():
     df = read_files_from_directory('already_paired_data.csv')
 
     if df is not None:
+        
+        st.write(f"Uploaded Data")
+        st.write(df)
+
         st.write(f"Data Information")
         buffer = StringIO()
         df.info(buf=buffer)
