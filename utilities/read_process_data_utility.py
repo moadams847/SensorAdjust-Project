@@ -15,90 +15,70 @@ def get_session_directory():
     session_dir.mkdir(parents=True, exist_ok=True)
     return session_dir
 
-def file_upload_form_for_already_paired():
-    return st.file_uploader("Upload already paired data (CSV)", type=['csv'])
+def load_specific_csv_from_session_directory(session_directory_getter, preferred_filenames=['uploaded_data.csv']):
+    """
+    Loads a specific CSV file, preferring 'data.csv' or 'resampled.csv', found in the session-specific directory.
 
-def custom_date_parser(date):
-    return pd.to_datetime(date, format='%d/%m/%Y %H:%M')
+    Parameters:
+    - session_directory_getter: A callable that returns a Path object representing the session-specific directory.
+    - preferred_filenames: List of filenames to look for, in order of preference.
 
-def files_upload_for_already_paired():
-    session_dir = get_session_directory()  # Use session-specific directory
+    Returns:
+    - A pandas DataFrame loaded from the specified CSV file, or None if the files are not found.
+    """
+    session_dir = session_directory_getter()  # Get session-specific directory as a Path object
+
+    # Look for preferred files first
+    for filename in preferred_filenames:
+        file_path = session_dir / filename
+        if file_path.exists():
+            try:
+                df = pd.read_csv(file_path, parse_dates=["DataDate"])
+                return df
+            except ValueError as e:
+                if "DataDate" in str(e):
+                    st.error(f"The 'DataDate' column is required but was not found in {filename}.")
+                else:
+                    st.error(f"An error occurred while reading {filename}.")
+                return None
     
-    # File uploader placeholder
-    placeholder = st.empty()
-
-    with st.form("Paird Data"):
-        uploaded_already_paired_data = file_upload_form_for_already_paired()
-
-        submit_button = st.form_submit_button('Submit')
-
-        if submit_button:
-            if uploaded_already_paired_data is None:
-                st.warning("Please upload paired data to proceed.")
+    # If preferred files are not found, look for any CSV file
+    csv_files = list(session_dir.glob('*.csv'))
+    if csv_files:
+        try:
+            df = pd.read_csv(csv_files[0], parse_dates=["DataDate"])
+            return df
+        except ValueError as e:
+            if "DataDate" in str(e):
+                st.error("The 'DataDate' column is required but was not found in the CSV file.")
             else:
-                placeholder.success("Uploaded successfully to the cloud")
-                already_paired_df = pd.read_csv(uploaded_already_paired_data, 
-                                                parse_dates=["DataDate"])
-                st.write(already_paired_df.head())
-                
-                # Save file in session directory
-                already_paired_df.to_csv(session_dir / 'already_paired_data.csv', index=False)
-
-
-# def read_files_from_directory():
-#      session_dir = get_session_directory()  # Use session-specific directory
-
-#      csv_files = list(session_dir.glob('*.csv'))
-#      print(csv_files)
-     
-#      if not csv_files:
-#          st.warning("No CSV files found in the cloud directory.")
-#      else:
-#          data = pd.read_csv(csv_files[0], parse_dates=["DataDate"])
-#          return data
-        
-
-def read_files_from_directory(filename):
-    session_dir = Path(get_session_directory())  # Ensure session_dir is a Path object
-
-    # Build the full path to the target file within the session directory
-    target_file = session_dir / filename
-
-    # Check if the target file exists
-    if not target_file.exists():
-        st.warning(f"No file found in the cloud directory.")
+                st.error("An error occurred while reading the CSV file.")
+            return None
+    else:
+        st.warning("No CSV file found in the cloud directory.")
         return None
 
-    # If the file exists, read it into a DataFrame
-    data = pd.read_csv(target_file)
-    # print(data.info())
-    return data
 
+def summary_statistics(df):
+    try:
 
-def read_already_paired_dfs():
-    df = read_files_from_directory("already_paired_data.csv")
-    st.write(df)
+        if df is not None:
+            st.write(f"Data")
+            st.write(df)
 
+            st.write(f"Data Information")
+            buffer = StringIO()
+            df.info(buf=buffer)
+            s = buffer.getvalue()
+            st.text(s)
 
-def summary_statistics():
-    df = read_files_from_directory('already_paired_data.csv')
+            st.write(f"Summary statistics")
+            st.write(df.iloc[:, df.columns != 'DataDate'].describe())
 
-    if df is not None:
+    except ValueError as e:
+                st.error("Something might be wrong with with the uploaded file")
         
-        st.write(f"Uploaded Data")
-        st.write(df)
-
-        st.write(f"Data Information")
-        buffer = StringIO()
-        df.info(buf=buffer)
-        s = buffer.getvalue()
-        st.text(s)
-
-        st.write(f"Summary statistics")
-        st.write(df.iloc[:, df.columns != 'DataDate'].describe())
-
-        
-def resample_and_aggregate(resample_freq, aggregation_func):
+def resample_and_aggregate(data, resample_freq, aggregation_func):
         """
         Resample a DataFrame by a specified frequency and perform aggregation using a given function.
         
@@ -115,7 +95,7 @@ def resample_and_aggregate(resample_freq, aggregation_func):
                 The resampled and aggregated DataFrame.
         """
 
-        data = read_files_from_directory("already_paired_data.csv")
+       
         resampled_df = None  # Initialize resampled_df to handle cases where data might be None
 
         if data is not None:
@@ -130,9 +110,61 @@ def resample_and_aggregate(resample_freq, aggregation_func):
                 resampled_df = data.resample(resample_freq).min()
             else:
                 raise ValueError("Invalid aggregation function. Choose 'mean', 'max', or 'min'.")
-
         return resampled_df
 
 
+# def resample_and_merge_csv(df1, df2, date_format='%Y-%m-%d %H:%M:%S', resample_freq='T'):
+def resample_and_merge_csv(df1, df2, resample_freq='T'):
+
+    def prepare_df(df):
+        # Convert 'DataDate' to datetime and set as index
+        df['DataDate'] = pd.to_datetime(df['DataDate'])
+        df.set_index('DataDate', inplace=True)
+        
+        # Check if the index is a DatetimeIndex before resampling
+        if isinstance(df.index, pd.DatetimeIndex):
+            return df.resample(resample_freq).mean().dropna()
+        else:
+            raise TypeError("Index is not a DatetimeIndex. Resampling requires a DatetimeIndex.")
+    
+    try:
+        df1_prepared = prepare_df(df1)
+        df2_prepared = prepare_df(df2)
+        
+        # Inner merge the two DataFrames based on the date index
+        merged_df = pd.merge(df1_prepared, df2_prepared, left_index=True, right_index=True, how='inner')
+        
+        # Optionally, reset the index if you want 'DataDate' back as a column
+        merged_df.reset_index(inplace=True)
+        
+        return merged_df, merged_df.isnull().sum()
+
+    except ValueError as e:
+        st.error(f"Error: {e}")
+        return None, None
+    except TypeError as e:
+        st.error(f"Error: {e}")
+        return None, None
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        return None, None
+
+# Example usage:
+# merged_df, null_counts = resample_and_merge_csv(df1, df2, date_format='%Y-%m-%d %H:%M:%S', resample_freq='H')
+
+
+def add_suffix_to_columns(df, suffix, exclude_column):
+    """
+    Adds a suffix to all columns in a DataFrame except for specified columns to exclude.
+
+    Parameters:
+    - df (pd.DataFrame): The DataFrame to modify.
+    - suffix (str): The suffix to add to the column names.
+    - exclude_column (str or list): The column name(s) to exclude from having the suffix added.
+    """
+    if isinstance(exclude_column, str):
+        exclude_column = [exclude_column]  # Convert to list for uniform processing
+    
+    df.columns = [col + suffix if col not in exclude_column else col for col in df.columns]
 
 
