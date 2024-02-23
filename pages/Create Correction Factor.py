@@ -46,7 +46,7 @@ with tab1:
     st.header("Data stored in the cloud directory")
 
     file_options = ["uploaded_data.csv", "resampled_data.csv"]
-    warning_message = "No calibration files found in the directory."
+    warning_message = "No files found in the directory."
     file_selection  = "Select CSV file for calibration"
     df = select_and_read_file(file_options, warning_message, file_selection, key="calibration_file_selection")
     if df is not None:
