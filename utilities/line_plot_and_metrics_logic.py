@@ -26,7 +26,7 @@ from utilities.calibration_utility import (
 def line_plot(csv_file_list, key_value_one="line_plot_file_selection", key_value_two="line_plot_col_selection_two", form_value="line plot form"):
     # file_options = ["uploaded_data.csv", "resampled_data.csv", "calibrated_data.csv"]
     file_options = csv_file_list
-    warning_message = "No calibration files found in the directory."
+    warning_message = "No files found in the cloud directory."
     file_selection  = "Select CSV file for line Plot"
     df = select_and_read_file(file_options, warning_message, file_selection, key=key_value_one)
     if df is not None:
@@ -56,7 +56,7 @@ def line_plot(csv_file_list, key_value_one="line_plot_file_selection", key_value
 def metrics(csv_file_list, key_value_one="sensor_metrics_file_selection", key_value_two="sensor_metrics_col_selection", form_value="sensor metrics form"):
     file_options = csv_file_list
     # file_options = ["uploaded_data.csv", "resampled_data.csv", "calibrated_data.csv"]
-    warning_message = "No calibration files found in the directory."
+    warning_message = "No files found in the cloud directory."
     file_selection  = "Select CSV file for Sensor Metrics"
     df = select_and_read_file(file_options, warning_message, file_selection, key=key_value_one)
 

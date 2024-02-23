@@ -31,7 +31,7 @@ from utilities.calibration_utility import (
 
 def basic_calibration():
     file_options = ["uploaded_data.csv", "resampled_data.csv"]
-    warning_message = "No calibration files found in the directory."
+    warning_message = "No files found in the cloud directory."
     file_selection  = "Select CSV file to create correction factor"
 
     df = select_and_read_file(file_options, warning_message, file_selection, key="create_correction_file_selection")
