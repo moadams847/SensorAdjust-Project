@@ -29,7 +29,6 @@ if joblib_files:
     selected_file = st.selectbox("Download file", joblib_files)
 
 
-    
     # Full path to the selected file
     file_path = os.path.join(session_dir, selected_file)
     

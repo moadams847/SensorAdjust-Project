@@ -25,7 +25,7 @@ tab1, tab2, tab3, tab4  = st.tabs(["Documentation", "Upload Data", "View Data", 
    
 with tab1:
     st.title("Guide for SensorAdjust Project")
-
+    
     st.markdown("""
     **Overview**: SensorAdjust is an open source project that aims to simplify 
     the calibration process for users with minimal or no coding expertise. 
@@ -65,16 +65,6 @@ with tab1:
 
     Adhering to these preparatory guidelines guarantees that your data is properly formatted and ready for the SensorAdjust platform. This initial preparation is crucial for fully harnessing the platform's potential, facilitating a streamlined and precise generation of correction factor. Consequently, you can apply this correction factor to your low-cost sensor data with confidence, ensuring accuracy and reliability in your environmental monitoring efforts. 
     """, unsafe_allow_html=True)
-
-
-
-
-
-
-
-
-
-
  
 with tab2:
     paired = st.radio("Is your data paired alreday?", ["Yes", "No"])
