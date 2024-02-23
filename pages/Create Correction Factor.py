@@ -43,7 +43,7 @@ session_dir = get_session_directory()  # Use session-specific directory
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["Data for Calibration ", "Line Graph", "Metrics and Scatter Plot", "Create Correction Factor", "Graph and metrics"])
 
 with tab1:
-    st.header("Data to be used for calibration")
+    st.header("Data stored in the cloud directory for correction factor generation")
 
     file_options = ["uploaded_data.csv", "resampled_data.csv"]
     warning_message = "No calibration files found in the directory."
