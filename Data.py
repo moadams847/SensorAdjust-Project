@@ -187,7 +187,7 @@ with tab2:
                 
         # Proceed only if both dataframes are available
         if uploaded_low_cost_sensor_df is not None and uploaded_reference_df is not None:
-            merged_df, null_counts = resample_and_merge_csv(uploaded_low_cost_sensor_df, uploaded_reference_df)
+            merged_df, null_counts = resample_and_merge_csv(cleaned_uploaded_low_cost_sensor_df, cleaned_uploaded_reference_df)
             
             if merged_df is not None:
                 # It's safe to save the DataFrame to a CSV file
