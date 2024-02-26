@@ -95,7 +95,6 @@ def resample_and_aggregate(data, resample_freq, aggregation_func):
                 The resampled and aggregated DataFrame.
         """
 
-       
         resampled_df = None  # Initialize resampled_df to handle cases where data might be None
 
         if data is not None:

@@ -85,12 +85,24 @@ with tab2:
         else:
             try:
                 already_paired_df = pd.read_csv(uploaded_already_paired_data, parse_dates=["DataDate"])
+
+                # Identify numeric columns (includes integers and floats)
+                numeric_cols = already_paired_df.select_dtypes(include=['number']).columns
+
+                # Identify datetime columns
+                datetime_cols = already_paired_df.select_dtypes(include=['datetime']).columns
+
+                # Combine the lists of columns to keep
+                cols_to_keep = numeric_cols.union(datetime_cols)
+
+                # Create a new DataFrame with only the desired columns
+                df_cleaned = already_paired_df[cols_to_keep]
                         
                 st.subheader("First five rows of the uploaded data")
-                st.write(already_paired_df.head())
+                st.write(df_cleaned.head())
                         
                 # Save file in session directory
-                already_paired_df.to_csv(session_dir / 'uploaded_data.csv', index=False)
+                df_cleaned.to_csv(session_dir / 'uploaded_data.csv', index=False)
                 placeholder.success("File successfully uploaded to the cloud as uploaded_data.csv")
 
             except ValueError as e:
@@ -122,13 +134,25 @@ with tab2:
             try:
                 uploaded_low_cost_sensor_df = pd.read_csv(uploaded_low_cost_sensor_data, parse_dates=["DataDate"])
                
+               # Identify numeric columns (includes integers and floats)
+                numeric_cols = uploaded_low_cost_sensor_df.select_dtypes(include=['number']).columns
+
+                # Identify datetime columns
+                datetime_cols = uploaded_low_cost_sensor_df.select_dtypes(include=['datetime']).columns
+
+                # Combine the lists of columns to keep
+                cols_to_keep = numeric_cols.union(datetime_cols)
+
+                # Create a new DataFrame with only the desired columns
+                cleaned_uploaded_low_cost_sensor_df = uploaded_low_cost_sensor_df[cols_to_keep]
+
                 #add suffix
                 suffix = "_LCS"
                 exclude_column = "DataDate"
-                add_suffix_to_columns(uploaded_low_cost_sensor_df, suffix, exclude_column)
+                add_suffix_to_columns(cleaned_uploaded_low_cost_sensor_df, suffix, exclude_column)
 
                 header_placeholder_one.subheader("First five rows of uploaded low-cost sensor data")
-                data_placeholder_one.write(uploaded_low_cost_sensor_df.head())
+                data_placeholder_one.write(cleaned_uploaded_low_cost_sensor_df.head())
                 placeholder_one.success("Low-cost sensor data uploaded successfully to the cloud")
             except ValueError as e:
                 st.error(f"Error processing low-cost sensor data: {e}")
@@ -138,13 +162,25 @@ with tab2:
             try:
                 uploaded_reference_df = pd.read_csv(uploaded_reference_data, parse_dates=["DataDate"])
 
+                # Identify numeric columns (includes integers and floats)
+                numeric_cols = uploaded_reference_df.select_dtypes(include=['number']).columns
+
+                # Identify datetime columns
+                datetime_cols = uploaded_reference_df.select_dtypes(include=['datetime']).columns
+
+                # Combine the lists of columns to keep
+                cols_to_keep = numeric_cols.union(datetime_cols)
+
+                # Create a new DataFrame with only the desired columns
+                cleaned_uploaded_reference_df = uploaded_reference_df[cols_to_keep]
+
                 #add suffix
                 suffix = "_Reference"
                 exclude_column = "DataDate"
-                add_suffix_to_columns(uploaded_reference_df, suffix, exclude_column)
+                add_suffix_to_columns(cleaned_uploaded_reference_df, suffix, exclude_column)
 
                 header_placeholder_two.subheader("First five rows of uploaded reference monitor data")
-                data_placeholder_two.write(uploaded_reference_df.head())
+                data_placeholder_two.write(cleaned_uploaded_reference_df.head())
                 placeholder_two.success("Reference monitor data uploaded successfully to the cloud")
             except ValueError as e:
                 st.error(f"Error processing reference monitor data: {e}")
@@ -159,7 +195,7 @@ with tab2:
                 st.success("Data merged and saved successfully as uploaded_data.csv")
             else:
                 # Handle the situation when merged_df is None
-                st.error("Failed to merge data. Check if the data formats are correct.")
+                st.error("Merge unsuccessful. Please verify data formats and remove any unnecessary columns.")
         else:
             st.warning("Please upload data to proceed.")
 
