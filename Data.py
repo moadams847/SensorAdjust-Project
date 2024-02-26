@@ -223,9 +223,9 @@ with tab4:
         with col2:
 
             frequency_mapping = {
-            'Minute Average': 'T',
-            'Hourly Average': 'H',
-            'Daily Average': 'D'
+            'Minute': 'T',
+            'Hourly': 'H',
+            'Daily': 'D'
             }
 
             # Streamlit UI for selecting aggregation frequency
