@@ -166,7 +166,7 @@ def basic_calibration():
                             new_data =  df_copy[col_options_create_correction_independent]
                             calibrated_col = loaded_model.predict(new_data)
                             calibrated_col_df=pd.DataFrame({f'Calibrated_column':calibrated_col})
-                            horizontal_concat_of_cal_df = pd.concat([df_copy, calibrated_col_df], axis=1)  
+                            horizontal_concat_of_cal_df = pd.concat([calibrated_col_df, df_copy, ], axis=1)  
                             
                             placeholder = st.empty()
                             st.subheader("Data after Calibration")
