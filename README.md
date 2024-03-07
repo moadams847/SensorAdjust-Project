@@ -1,4 +1,4 @@
-# Guide for SensorAdjust Project 
+# [Guide for SensorAdjust Project ](https://sensor-adjust-project.streamlit.app/ "The SensorAdjust Project website")
 
 **Overview**: SensorAdjust is an open source project that aims to simplify 
 the calibration process for users with minimal or no coding expertise. 
