@@ -1,4 +1,4 @@
-# Guide for SensorAdjust Project [URL](https://sensor-adjust-project.streamlit.app/ "The SensorAdjust Project website")
+# Guide for SensorAdjust Project 
 
 **Overview**: SensorAdjust is an open source project that aims to simplify 
 the calibration process for users with minimal or no coding expertise. 
@@ -32,3 +32,5 @@ Adhering to these guidelines will guarantee a seamless generation of the correct
    - If your dataset is already paired (meaning each timestamp has corresponding values from both the low-cost sensor and the reference monitor), and you upload this combined data, the platform will not alter the column names. This feature is designed to accommodate users who have pre-processed their data.
 
 Adhering to these preparatory guidelines guarantees that your data is properly formatted and ready for the SensorAdjust platform. This initial preparation is crucial for fully harnessing the platform's potential, facilitating a streamlined and precise generation of correction factor. Consequently, you can apply this correction factor to your low-cost sensor data with confidence, ensuring accuracy and reliability in your environmental monitoring efforts.
+
+[Project URL](https://sensor-adjust-project.streamlit.app/ "The SensorAdjust Project website")
